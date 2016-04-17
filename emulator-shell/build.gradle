@@ -14,6 +14,11 @@ apply plugin: 'spring-boot'
 jar {
     baseName = 'emulator-shell'
     version =  '0.1-SNAPSHOT'
+    manifest {
+        attributes 'Implementation-Title': 'Device Emulator Shell',
+                'Implementation-Version': version
+
+    }
 }
 
 repositories {
