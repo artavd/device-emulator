@@ -31,4 +31,7 @@ repositories {
 dependencies {
     compile "org.springframework.shell:spring-shell:1.2.0.M1"
     compile "org.springframework.boot:spring-boot-starter"
+    compile "org.apache.commons:commons-lang3:3.4"
+
+    testCompile "junit:junit:4.12"
 }
