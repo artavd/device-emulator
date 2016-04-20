@@ -1,38 +1,68 @@
 package artavd;
 
-import artavd.devices.io.Port;
-import artavd.devices.io.PortsRepository;
-import artavd.devices.io.PortsRepositoryImpl;
-import artavd.devices.shell.SmartListTableModel;
+import artavd.shells.demu.SmartListTableModel;
 import org.fusesource.jansi.Ansi;
+import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.shell.support.table.Table;
-import org.springframework.shell.support.table.TableHeader;
-import org.springframework.shell.support.table.TableRenderer;
-import org.springframework.shell.support.util.AnsiEscapeCode;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class TableTest {
 
-    @Test
-    public void test() {
-        PortsRepository ports = new PortsRepositoryImpl();
+    private final static String EXPECTED_TABLE =
+            "\u001B[39;0mPORT      STATE        BOUND" + System.lineSeparator() +
+            "TCP3001   \u001B[32mopened\u001B[m   \u001B[33mfalse\u001B[m" + System.lineSeparator() +
+            "TCP3002   \u001B[31mclosed\u001B[m   \u001B[36mtrue\u001B[m" + System.lineSeparator() +
+            "TCP3003   \u001B[31mclosed\u001B[m   \u001B[33mfalse\u001B[m" + System.lineSeparator() +
+            "TCP3004   connecting   \u001B[36mtrue\u001B[m" + System.lineSeparator();
 
-        System.out.println(new SmartListTableModel<>(ports.getPorts())
+    @Test
+    public void tableShouldBeRenderCorrectly() {
+        // Given
+        List<TestObject> ports = Arrays.asList(
+                new TestObject("TCP3001", "opened", false),
+                new TestObject("TCP3002", "closed", true),
+                new TestObject("TCP3003", "closed", false),
+                new TestObject("TCP3004", "connecting", true));
+
+        // When
+        String table = new SmartListTableModel<>(ports)
                 .withHeaders("PORT", "STATE", "BOUND")
-                .withAccessor(Port::getName)
-                .withAccessor(port -> port.getCurrentState().getName())
-                .withAccessor(port -> true)
-                .withColorizer(1, port -> port.getCurrentState().isError() ? Ansi.Color.RED : Ansi.Color.DEFAULT)
-                .render());
+                .withAccessor(TestObject::getName)
+                .withAccessor(TestObject::getState)
+                .withAccessor(TestObject::isBound)
+                .withColorizer(1, port ->
+                        "opened".equals(port.state) ? Ansi.Color.GREEN :
+                        "closed".equals(port.state) ? Ansi.Color.RED : null)
+                .withColorizer(2, port -> port.isBound() ? Ansi.Color.CYAN : Ansi.Color.YELLOW)
+                .render();
+
+        // Then
+        Assert.assertEquals(EXPECTED_TABLE, table);
     }
 
-    @Test
-    public void test2() {
-        Table table = new Table()
-                .addHeader(1, new TableHeader("PORT"))
-                .addHeader(2, new TableHeader("STATE"))
-                .addHeader(3, new TableHeader("BOUND"))
-                .addRow(AnsiEscapeCode.decorate("Port Name", AnsiEscapeCode.FG_BLUE), "current state", "true");
-        System.out.println(TableRenderer.renderTextTable(table));
+    private static class TestObject {
+        private String name;
+        private String state;
+        private boolean bound;
+
+        private TestObject(String name, String state, boolean bound) {
+            this.name = name;
+            this.state = state;
+            this.bound = bound;
+        }
+
+        String getName() {
+            return name;
+        }
+
+        String getState() {
+            return state;
+        }
+
+        boolean isBound() {
+            return bound;
+        }
     }
 }

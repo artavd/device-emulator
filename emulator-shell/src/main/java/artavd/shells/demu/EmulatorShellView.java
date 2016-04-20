@@ -1,4 +1,4 @@
-package artavd.devices.shell;
+package artavd.shells.demu;
 
 import org.springframework.shell.plugin.BannerProvider;
 import org.springframework.shell.plugin.PromptProvider;

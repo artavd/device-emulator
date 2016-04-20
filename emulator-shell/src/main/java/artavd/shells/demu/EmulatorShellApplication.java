@@ -1,4 +1,4 @@
-package artavd.devices.shell;
+package artavd.shells.demu;
 
 import artavd.devices.DevicesConfiguration;
 import artavd.spring.shell.EnableCommandLineShell;
@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 @Configuration
-@ComponentScan("artavd.devices.shell")
+@ComponentScan("artavd.shells.demu")
 @EnableCommandLineShell
 @Import(DevicesConfiguration.class)
 public class EmulatorShellApplication {

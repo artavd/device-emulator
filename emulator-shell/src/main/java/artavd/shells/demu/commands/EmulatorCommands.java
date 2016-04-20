@@ -1,4 +1,4 @@
-package artavd.devices.shell.commands;
+package artavd.shells.demu.commands;
 
 import org.springframework.shell.core.CommandMarker;
 import org.springframework.stereotype.Component;
