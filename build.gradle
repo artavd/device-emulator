@@ -1,3 +1,32 @@
-allprojects {
-    group = 'artavd.devices'
+ext {
+    springVersion = "4.2.6.RELEASE"
+}
+
+subprojects { subproject ->
+    apply plugin: "java"
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    repositories {
+        jcenter()
+        maven { url "https://repo.spring.io/libs-milestone" }
+    }
+
+    jar {
+        baseName = subproject.name
+        version = subproject.version
+        manifest {
+            attributes "Implementation-Title": subproject.description,
+                    "Implementation-Version": subproject.version
+
+        }
+    }
+
+    dependencies {
+        compile "org.springframework:spring-context:${springVersion}"
+        compile "org.slf4j:slf4j-api:1.7.12"
+
+        testCompile "junit:junit:4.12"
+    }
 }

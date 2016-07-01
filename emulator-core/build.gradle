@@ -1,0 +1,4 @@
+dependencies {
+    compile project(":devices-core")
+    compile project(":io")
+}

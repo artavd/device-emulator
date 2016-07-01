@@ -1,0 +1,10 @@
+apply plugin: "application"
+
+dependencies {
+    compile project(":shell")
+    compile project(":emulator-core")
+
+    runtime "ch.qos.logback:logback-classic:1.1.3"
+}
+
+mainClassName = "artavd.devices.shell.DeviceEmulatorShellApplication"
