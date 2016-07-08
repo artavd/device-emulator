@@ -5,4 +5,5 @@ include "io"
 include "emulator-core"
 include "shell"
 include "device-emulator-shell"
+include "device-emulator-console"
 

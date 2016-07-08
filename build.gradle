@@ -10,15 +10,15 @@ subprojects { subproject ->
 
     repositories {
         jcenter()
-        maven { url "https://repo.spring.io/libs-milestone" }
     }
 
     jar {
         baseName = subproject.name
         version = subproject.version
         manifest {
-            attributes "Implementation-Title": subproject.description,
-                    "Implementation-Version": subproject.version
+            attributes(
+                    "Implementation-Title": subproject.description,
+                    "Implementation-Version": subproject.version)
 
         }
     }

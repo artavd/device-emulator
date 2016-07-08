@@ -1,0 +1,10 @@
+apply plugin: "application"
+
+dependencies {
+    compile "org.springframework.boot:spring-boot:1.3.5.RELEASE"
+    compile "args4j:args4j:2.33"
+
+    runtime "ch.qos.logback:logback-classic:1.1.3"
+}
+
+mainClassName = "artavd.devices.console.DeviceEmulatorApplication"
