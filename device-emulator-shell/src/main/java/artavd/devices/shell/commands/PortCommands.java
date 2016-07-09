@@ -1,6 +1,6 @@
 package artavd.devices.shell.commands;
 
-import artavd.devices.dispatch.DeviceDispatcher;
+import artavd.devices.dispatch.Dispatcher;
 import artavd.io.Port;
 import artavd.io.PortState;
 import artavd.io.PortsRepository;
@@ -26,7 +26,7 @@ public final class PortCommands implements CommandMarker {
     private PortsRepository ports;
 
     @Autowired
-    private DeviceDispatcher dispatcher;
+    private Dispatcher dispatcher;
 
     @CliCommand(value = "port list", help = "Print list of available ports with information about each one.")
     public void getPortList() {
@@ -34,7 +34,7 @@ public final class PortCommands implements CommandMarker {
                 .withHeaders("PORT", "STATE", "BOUND")
                 .withAccessor(Port::getName)
                 .withAccessor(port -> port.getCurrentState().getName())
-                .withAccessor(port -> !dispatcher.getBoundsDevices(port).isEmpty())
+                .withAccessor(port -> !dispatcher.getBoundDevices(port).isEmpty())
                 .withColorizer(1, port -> toColor(port.getCurrentState()))
                 .render());
     }

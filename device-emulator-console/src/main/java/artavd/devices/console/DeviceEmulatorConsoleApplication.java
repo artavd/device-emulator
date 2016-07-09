@@ -1,5 +1,6 @@
 package artavd.devices.console;
 
+import artavd.devices.EmulatorCoreConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.Banner;
@@ -7,8 +8,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 @Configuration
+@Import(EmulatorCoreConfiguration.class)
 public class DeviceEmulatorConsoleApplication {
 
     private static final Logger logger = LoggerFactory.getLogger(DeviceEmulatorConsoleApplication.class);

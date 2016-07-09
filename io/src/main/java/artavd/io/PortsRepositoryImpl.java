@@ -33,12 +33,8 @@ public class PortsRepositoryImpl implements PortsRepository {
     }
 
     @Override
-    public boolean registerPort(Port port) {
-        if (ports.contains(port)) {
-            return false;
-        }
-
-        ports.add(port);
-        return true;
+    public Port getOrCreatePort(String name) {
+        // TODO: use ports factory
+        return null;
     }
 }

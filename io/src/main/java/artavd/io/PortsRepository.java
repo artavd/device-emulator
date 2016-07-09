@@ -9,5 +9,5 @@ public interface PortsRepository {
 
     Optional<Port> getPort(String name);
 
-    boolean registerPort(Port port);
+    Port getOrCreatePort(String name);
 }
