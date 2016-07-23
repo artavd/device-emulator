@@ -13,17 +13,18 @@ import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.toList;
 
-public class MessageProducer implements MessageController {
+public final class MessageProducer implements MessageController {
+    public static final long DEFAULT_INTERVAL = 15000;
 
     private final String name;
-    private final long periodInMilliseconds;
+    private final long intervalInMilliseconds;
     private final String formatString;
     private final MessageValueProducer[] valueProducers;
 
-    public MessageProducer(String name, long periodInMilliseconds, String formatString,
+    private MessageProducer(String name, long intervalInMilliseconds, String formatString,
                            MessageValueProducer[] valueProducers) {
         this.name = name;
-        this.periodInMilliseconds = periodInMilliseconds;
+        this.intervalInMilliseconds = intervalInMilliseconds;
         this.formatString = formatString;
         this.valueProducers = valueProducers;
     }
@@ -39,8 +40,8 @@ public class MessageProducer implements MessageController {
         return name;
     }
 
-    public long getPeriodInMilliseconds() {
-        return periodInMilliseconds;
+    public long getIntervalInMilliseconds() {
+        return intervalInMilliseconds;
     }
 
     @Override
@@ -74,14 +75,13 @@ public class MessageProducer implements MessageController {
 
     public static final class Builder {
 
-        private static final String formatStringPlaceholderPatternString =
+        private static final String PLACEHOLDER_PATTERN_STRING =
                 "%(\\d+\\$)?([-#+ 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%])";
-
-        private static final Pattern placeholderPattern = Pattern.compile(formatStringPlaceholderPatternString);
+        private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile(PLACEHOLDER_PATTERN_STRING);
 
         private String name;
         private String formatString;
-        private long period = 15000;
+        private long interval = DEFAULT_INTERVAL;
         private List<MessageValueProducer> valueProducers = new ArrayList<>();
 
         public Builder withName(String name) {
@@ -94,8 +94,10 @@ public class MessageProducer implements MessageController {
             return this;
         }
 
-        public Builder withPeriod(long period, TimeUnit timeUnit) {
-            this.period = TimeUnit.MILLISECONDS.convert(period, timeUnit);
+        public Builder withInterval(long interval, TimeUnit timeUnit) {
+            this.interval = interval <= 0
+                    ? DEFAULT_INTERVAL
+                    : TimeUnit.MILLISECONDS.convert(interval, timeUnit);
             return this;
         }
 
@@ -127,13 +129,13 @@ public class MessageProducer implements MessageController {
 
             return new MessageProducer(
                     name,
-                    period,
+                    interval,
                     formatString,
                     valueProducers.stream().toArray(MessageValueProducer[]::new));
         }
 
         private void checkValueProducersMatchFormatString() {
-            Matcher matcher = placeholderPattern.matcher(formatString);
+            Matcher matcher = PLACEHOLDER_PATTERN.matcher(formatString);
             int placeholdersCount = 0;
             while (matcher.find()) {
                 placeholdersCount++;

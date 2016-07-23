@@ -1,3 +1,24 @@
 {
-  "name": "test-device"
+  "name": "test-device",
+  "messages": [
+    {
+      "name": "dynamic message",
+      "message": "test %s message %s",
+      "values": [
+        {
+          "name": "first-value",
+          "source": [ "one", "two", "three", "four" ]
+        },
+        {
+          "name": "second-value",
+          "source": [ "first", "second", "third" ]
+        }
+      ]
+    },
+    {
+      "name": "constant message",
+      "interval": "5000",
+      "message": "constant text"
+    }
+  ]
 }

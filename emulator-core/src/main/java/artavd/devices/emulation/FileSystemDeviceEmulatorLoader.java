@@ -1,6 +1,8 @@
 package artavd.devices.emulation;
 
 import artavd.devices.emulation.domain.DeviceEmulator;
+import artavd.devices.emulation.domain.MessageProducer;
+import artavd.devices.emulation.domain.MessageValueProducer;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
@@ -11,10 +13,14 @@ import rx.schedulers.Schedulers;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
+import static artavd.devices.utils.CommonUtils.asStream;
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 
 public final class FileSystemDeviceEmulatorLoader implements DeviceEmulatorLoader {
 
@@ -59,12 +65,64 @@ public final class FileSystemDeviceEmulatorLoader implements DeviceEmulatorLoade
             return Optional.empty();
         }
 
-        DeviceEmulator emulator = DeviceEmulator.builder().withName(name).withScheduler(emulatorScheduler).build();
+        DeviceEmulator emulator = DeviceEmulator.builder()
+                .withName(name)
+                .withScheduler(emulatorScheduler)
+                .addMessageProducers(createMessageProducers(configuration.messages))
+                .build();
+
         return Optional.of(emulator);
     }
 
-    private final static class DeviceEmulatorConfiguration {
+    private List<MessageProducer> createMessageProducers(MessageConfiguration[] messageConfigurations) {
+        return asStream(messageConfigurations)
+                .map(configuration -> MessageProducer.builder()
+                        .withName(configuration.name)
+                        .withFormatString(configuration.message)
+                        .withInterval(configuration.interval, TimeUnit.MILLISECONDS)
+                        .addValueProducers(createValueProducers(configuration.values))
+                        .build())
+                .collect(toList());
+    }
+
+    private List<MessageValueProducer> createValueProducers(MessageValueConfiguration[] valueConfigurations) {
+        return asStream(valueConfigurations)
+                .map(configuration -> MessageValueProducer.builder()
+                        .withName(configuration.name)
+                        .addValues(configuration.source)
+                        .build())
+                .collect(toList());
+    }
+
+    private static final class DeviceEmulatorConfiguration {
         @JsonProperty
         String name;
+
+        @JsonProperty
+        MessageConfiguration[] messages;
+    }
+
+    private static final class MessageConfiguration {
+
+        @JsonProperty
+        String name;
+
+        @JsonProperty
+        long interval;
+
+        @JsonProperty
+        String message;
+
+        @JsonProperty
+        MessageValueConfiguration[] values;
+    }
+
+    private static final class MessageValueConfiguration {
+
+        @JsonProperty
+        String name;
+
+        @JsonProperty
+        String[] source;
     }
 }

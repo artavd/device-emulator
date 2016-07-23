@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static java.lang.String.format;
-
 @Repository
 public final class DeviceEmulatorsRepository implements DevicesRepository {
 
@@ -31,21 +29,26 @@ public final class DeviceEmulatorsRepository implements DevicesRepository {
     }
 
     @Override
-    public Device getDevice(String name) {
-        return registeredEmulators.stream()
+    public Optional<Device> getDevice(String name) {
+        Optional<DeviceEmulator> result = registeredEmulators.stream()
                 .filter(emulator -> emulator.getName().equals(name))
-                .findAny()
-                .orElseGet(() -> loadDevice(name));
+                .findAny();
+
+        if (!result.isPresent()) {
+            result = loadDevice(name);
+        }
+
+        return result.map(deviceEmulator -> (Device)deviceEmulator);
     }
 
     @Override
-    public DeviceController getController(Device device) {
+    public Optional<DeviceController> getController(Device device) {
         //noinspection SuspiciousMethodCalls
         if (!registeredEmulators.contains(device)) {
-            throw new IllegalArgumentException("Unknown device: " + device);
+            return Optional.empty();
         }
 
-        return (DeviceController)device;
+        return Optional.of((DeviceController)device);
     }
 
     @PreDestroy
@@ -56,16 +59,14 @@ public final class DeviceEmulatorsRepository implements DevicesRepository {
 
     // filter is present ensure
     @SuppressWarnings("OptionalGetWithoutIsPresent")
-    private DeviceEmulator loadDevice(String deviceName) {
-        DeviceEmulator loaded = deviceEmulatorLoaders.stream()
+    private Optional<DeviceEmulator> loadDevice(String deviceName) {
+        Optional<DeviceEmulator> loadedDevice = deviceEmulatorLoaders.stream()
                 .map(loader -> loader.load(deviceName))
                 .filter(Optional::isPresent)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(
-                        format("Device Emulator with '%s' name cannot be found", deviceName)))
-                .get();
+                .map(Optional::get)
+                .findFirst();
 
-        registeredEmulators.add(loaded);
-        return loaded;
+        loadedDevice.ifPresent(registeredEmulators::add);
+        return loadedDevice;
     }
 }

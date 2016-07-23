@@ -1,6 +1,6 @@
 package artavd.devices.core;
 
-public class DeviceMessage {
+public final class DeviceMessage {
 
     private final String name;
     private final String text;

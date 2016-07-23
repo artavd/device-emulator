@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public class MessageValueProducer implements ValueController {
+public final class MessageValueProducer implements ValueController {
 
     private final String name;
     private final String[] values;

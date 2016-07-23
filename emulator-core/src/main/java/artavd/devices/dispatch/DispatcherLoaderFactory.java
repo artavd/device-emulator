@@ -26,7 +26,7 @@ public final class DispatcherLoaderFactory {
 
     public DispatcherLoader createSingleLoader(String deviceName, String portName) {
         return () -> {
-            DeviceController device = devicesRepository.getController(devicesRepository.getDevice(deviceName));
+            DeviceController device = AbstractDispatcherLoader.getDeviceController(deviceName, devicesRepository);
             Port port = portsRepository.getOrCreatePort(portName);
             Map<DeviceController, Port[]> resultMap = new HashMap<>();
             resultMap.put(device, new Port[] { port} );

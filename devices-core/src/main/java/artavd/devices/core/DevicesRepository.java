@@ -2,13 +2,15 @@ package artavd.devices.core;
 
 import artavd.devices.controllers.DeviceController;
 
+import java.util.Optional;
+
 public interface DevicesRepository {
 
-    Device getDevice(String name);
+    Optional<Device> getDevice(String name);
 
-    DeviceController getController(Device device);
+    Optional<DeviceController> getController(Device device);
 
-    default DeviceController getController(String name) {
-        return getController(getDevice(name));
+    default Optional<DeviceController> getController(String name) {
+        return getDevice(name).flatMap(this::getController);
     }
 }

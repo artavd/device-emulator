@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 import static java.util.stream.Collectors.toList;
 
-public class DeviceEmulator implements Device, DeviceController {
+public final class DeviceEmulator implements Device, DeviceController {
 
     private static final Logger logger = LoggerFactory.getLogger(DeviceEmulator.class);
 
@@ -116,9 +116,9 @@ public class DeviceEmulator implements Device, DeviceController {
     }
 
     private Observable<DeviceMessage> getFeedForProducer(MessageProducer producer) {
-        long period = producer.getPeriodInMilliseconds();
+        long interval = producer.getIntervalInMilliseconds();
         return Observable
-                .interval(period, TimeUnit.MILLISECONDS, scheduler)
+                .interval(interval, TimeUnit.MILLISECONDS, scheduler)
                 .takeUntil(getStateFeed().filter(state -> state == DeviceState.STOPPED))
                 .repeatWhen(_unused_ -> getStateFeed().filter(state -> state == DeviceState.STARTED), scheduler)
                 .map(_unused_ -> producer.nextMessage());

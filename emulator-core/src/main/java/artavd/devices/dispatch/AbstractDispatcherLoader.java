@@ -26,7 +26,7 @@ public abstract class AbstractDispatcherLoader implements DispatcherLoader {
         return loadNames()
                 .entrySet().stream()
                 .collect(toMap(
-                        entry -> devicesRepository.getController(entry.getKey()),
+                        entry -> getDeviceController(entry.getKey(), devicesRepository),
                         entry -> parsePorts(entry.getValue())));
     }
 
@@ -37,4 +37,10 @@ public abstract class AbstractDispatcherLoader implements DispatcherLoader {
     }
 
     protected abstract Map<String, String[]> loadNames();
+
+    public static DeviceController getDeviceController(String name, DevicesRepository repository) {
+        return repository.getController(name)
+                .orElseThrow(() -> new IllegalArgumentException(String.format(
+                        "Device Controller for '%s' device is not registered!", name)));
+    }
 }

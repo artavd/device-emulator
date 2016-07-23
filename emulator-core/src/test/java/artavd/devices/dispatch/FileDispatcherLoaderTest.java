@@ -13,6 +13,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Optional;
 
 import static artavd.devices.utils.CommonUtils.asArray;
 import static artavd.devices.utils.CommonUtils.asSet;
@@ -35,11 +36,11 @@ public class FileDispatcherLoaderTest {
         // Given
         // devices mock configuration
         DeviceController cl31 = Mockito.mock(DeviceController.class);
-        when(devicesRepository.getController("CL31")).thenReturn(cl31);
+        when(devicesRepository.getController("CL31")).thenReturn(Optional.of(cl31));
         DeviceController lt31 = Mockito.mock(DeviceController.class);
-        when(devicesRepository.getController("LT31")).thenReturn(lt31);
+        when(devicesRepository.getController("LT31")).thenReturn(Optional.of(lt31));
         DeviceController ptb220 = Mockito.mock(DeviceController.class);
-        when(devicesRepository.getController("PTB220")).thenReturn(ptb220);
+        when(devicesRepository.getController("PTB220")).thenReturn(Optional.of(ptb220));
 
         // ports mock configuration
         Port tcp3001 = Mockito.mock(Port.class);
@@ -71,7 +72,7 @@ public class FileDispatcherLoaderTest {
     public void shouldThrowExceptionIfAnyDevicesWithEmptyPortList() {
         // Given
         DeviceController device = Mockito.mock(DeviceController.class);
-        when(devicesRepository.getController(anyString())).thenReturn(device);
+        when(devicesRepository.getController(anyString())).thenReturn(Optional.of(device));
 
         Path configFile = Paths.get("src/test/resources/dispatch/with-empty-ports.json");
         FileDispatcherLoader loader = new FileDispatcherLoader(configFile, portsRepository, devicesRepository);
