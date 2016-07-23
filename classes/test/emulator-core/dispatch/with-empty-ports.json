@@ -1,0 +1,14 @@
+[
+  {
+    "device": "CL31",
+    "ports": [ "TCP3001", "TCP3002", "COM2" ]
+  },
+  {
+    "device": "LT31",
+    "ports": []
+  },
+  {
+    "device": "PTB220",
+    "ports": [ "COM3" ]
+  }
+]

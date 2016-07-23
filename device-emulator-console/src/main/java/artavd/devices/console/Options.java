@@ -7,7 +7,7 @@ import org.kohsuke.args4j.Option;
 import java.io.StringWriter;
 import java.util.Optional;
 
-public class Options {
+public final class Options {
 
     @Option(name = "-c", aliases = { "--config" }, metaVar = "<FILE>",
             usage = "Path to configuration file.")
@@ -23,15 +23,19 @@ public class Options {
             depends = "-d", forbids = "-c")
     private String portName;
 
-    private CmdLineParser parser = new CmdLineParser(this);
-    private CmdLineException exception = null;
+    private final CmdLineParser parser = new CmdLineParser(this);
+    private String errorMessage = null;
 
     public boolean tryParseArguments(String[] args) {
         try {
             parser.parseArgument(args);
+            if (configurationFile == null && deviceName == null) {
+                errorMessage = "One of '-c' or '-d' options should be specified";
+                return false;
+            }
             return true;
         } catch (CmdLineException ex) {
-            exception = ex;
+            errorMessage = ex.getMessage();
             return false;
         }
     }
@@ -39,11 +43,11 @@ public class Options {
     public String getUsage() {
         StringWriter output = new StringWriter();
         parser.printUsage(output, null);
-        String errorMessage = Optional.ofNullable(exception)
-                .map(ex -> ex.getMessage() + System.lineSeparator())
+        String message = Optional.ofNullable(errorMessage)
+                .map(em -> em + System.lineSeparator())
                 .orElse("");
 
-        return String.format("%s%s", errorMessage, output.toString());
+        return String.format("ERROR: %s%s", message, output.toString());
     }
 
     public String getConfigurationFile() {
@@ -62,6 +66,6 @@ public class Options {
     }
 
     private void assertNoErrors() {
-        assert exception == null;
+        assert errorMessage == null;
     }
 }

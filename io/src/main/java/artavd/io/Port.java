@@ -1,14 +1,24 @@
 package artavd.io;
 
+import rx.Observable;
+
+import java.util.concurrent.Future;
+
 public interface Port {
+
+    String getType();
 
     String getName();
 
     PortState getCurrentState();
 
-    void open();
+    Observable<PortState> getStateFeed();
 
-    void close();
+    Future<PortState> connect();
 
-    void transmit(byte[] data);
+    Future<PortState> disconnect();
+
+    boolean transmit(byte[] data);
+
+    Observable<byte[]> getDataFeed();
 }

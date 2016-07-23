@@ -1,5 +1,6 @@
 ext {
     springVersion = "4.2.6.RELEASE"
+    rxVersion = "1.1.6"
 }
 
 subprojects { subproject ->

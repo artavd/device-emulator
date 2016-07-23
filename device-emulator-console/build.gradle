@@ -8,4 +8,4 @@ dependencies {
     runtime "ch.qos.logback:logback-classic:1.1.3"
 }
 
-mainClassName = "artavd.devices.console.DeviceEmulatorApplication"
+mainClassName = "artavd.devices.console.DeviceEmulatorConsoleApplication"

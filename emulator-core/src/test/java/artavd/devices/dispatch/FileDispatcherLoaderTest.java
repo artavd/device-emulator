@@ -4,7 +4,6 @@ import artavd.devices.controllers.DeviceController;
 import artavd.devices.core.DevicesRepository;
 import artavd.io.Port;
 import artavd.io.PortsRepository;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -18,10 +17,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -86,6 +83,8 @@ public class FileDispatcherLoaderTest {
         // Given
         Map<String, String> parameters = new HashMap<>();
         parameters.put(FileDispatcherLoader.FILENAME_PARAMETER, "src/test/resources/dispatch/with-empty-ports.json");
+        DeviceController device = Mockito.mock(DeviceController.class);
+        when(devicesRepository.getController(anyString())).thenReturn(device);
 
         // When
         loader.load(parameters);

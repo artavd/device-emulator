@@ -5,7 +5,7 @@ import java.util.Optional;
 
 public interface PortsRepository {
 
-    List<Port> getPorts();
+    List<Port> getRegisterPorts();
 
     Optional<Port> getPort(String name);
 

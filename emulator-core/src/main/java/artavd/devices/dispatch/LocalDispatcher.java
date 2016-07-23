@@ -1,7 +1,9 @@
 package artavd.devices.dispatch;
 
 import artavd.devices.controllers.DeviceController;
+import artavd.devices.core.Device;
 import artavd.io.Port;
+import rx.Subscription;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,9 +11,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class LocalDispatcher implements Dispatcher {
+public final class LocalDispatcher implements Dispatcher {
 
-    private List<PortDeviceBinding> dispatchedItems = new ArrayList<>();
+    private final List<PortDeviceBinding> dispatchedItems = new ArrayList<>();
 
     @Override
     public List<DeviceController> getDispatchedDevices() {
@@ -45,6 +47,9 @@ public class LocalDispatcher implements Dispatcher {
             return false;
         }
 
+        port.connect();
+        device.start();
+
         PortDeviceBinding newBinding = createPortDeviceBinding(device, port);
         newBinding.bind();
         dispatchedItems.add(newBinding);
@@ -61,6 +66,15 @@ public class LocalDispatcher implements Dispatcher {
 
         dispatchedItems.remove(portDevice.get());
         portDevice.get().unbind();
+
+        if (getBoundPorts(device).isEmpty()) {
+            device.stop();
+        }
+
+        if (getBoundDevices(port).isEmpty()) {
+            port.disconnect();
+        }
+
         return true;
     }
 
@@ -76,8 +90,10 @@ public class LocalDispatcher implements Dispatcher {
     }
 
     private static class PortDeviceBinding {
-        private DeviceController controller;
-        private Port port;
+        private final DeviceController controller;
+        private final Port port;
+
+        private Subscription subscription = null;
 
         public PortDeviceBinding(DeviceController controller, Port port) {
             this.controller = controller;
@@ -93,15 +109,22 @@ public class LocalDispatcher implements Dispatcher {
         }
 
         public void bind() {
-
+            Device device = getController().getDevice();
+            device.getMessageFeed()
+                    .subscribe(m -> {
+                        if (port.getCurrentState().canTransmit()) {
+                            port.transmit(m.getText().getBytes());
+                        }
+                    });
         }
 
         public void unbind() {
-
+            subscription.unsubscribe();
+            subscription = null;
         }
 
         public boolean isBound() {
-            return true;
+            return subscription != null && !subscription.isUnsubscribed();
         }
     }
 }

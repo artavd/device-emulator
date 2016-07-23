@@ -1,16 +1,18 @@
 package artavd.devices.controllers;
 
 import artavd.devices.core.Device;
+import artavd.devices.core.DeviceState;
 
 import java.util.List;
+import java.util.concurrent.Future;
 
 public interface DeviceController {
 
     Device getDevice();
 
-    void start();
+    Future<DeviceState> start();
 
-    void stop();
+    Future<DeviceState> stop();
 
     List<String> getProvidedMessages();
 

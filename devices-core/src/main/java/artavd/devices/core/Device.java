@@ -6,5 +6,9 @@ public interface Device {
 
     String getName();
 
-    Observable<DeviceMessage> getMessages();
+    DeviceState getCurrentState();
+
+    Observable<DeviceMessage> getMessageFeed();
+
+    Observable<DeviceState> getStateFeed();
 }

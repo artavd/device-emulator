@@ -5,17 +5,20 @@ import org.fusesource.jansi.AnsiString;
 import org.springframework.shell.support.util.StringUtils;
 import org.springframework.shell.table.TableModel;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 public final class SmartListTableModel<T> extends TableModel {
 
     private final static String COLUMN_DELIMITER = "   ";
 
-    private List<T> items;
-    private List<Function<T, Object>> accessors;
+    private final List<T> items;
+    private final List<Function<T, Object>> accessors;
     // TODO: replace Ansi.Color to have ability pass bright colors and other decorators
-    private Map<Integer, Function<T, Ansi.Color>> colorizers;
+    private final Map<Integer, Function<T, Ansi.Color>> colorizers;
     private String[] headers;
 
     public SmartListTableModel(List<T> items) {
