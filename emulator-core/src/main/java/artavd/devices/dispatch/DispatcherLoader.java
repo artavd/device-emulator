@@ -1,8 +1,11 @@
 package artavd.devices.dispatch;
 
+import artavd.devices.controllers.DeviceController;
+import artavd.io.Port;
+
 import java.util.Map;
 
 public interface DispatcherLoader {
 
-    Dispatcher load(Map<String, String> parameters);
+    Map<DeviceController, Port[]> load();
 }

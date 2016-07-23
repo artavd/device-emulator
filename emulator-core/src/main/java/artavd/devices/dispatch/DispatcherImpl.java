@@ -3,6 +3,7 @@ package artavd.devices.dispatch;
 import artavd.devices.controllers.DeviceController;
 import artavd.devices.core.Device;
 import artavd.io.Port;
+import org.springframework.stereotype.Component;
 import rx.Subscription;
 
 import java.util.ArrayList;
@@ -11,7 +12,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public final class LocalDispatcher implements Dispatcher {
+@Component
+public final class DispatcherImpl implements Dispatcher {
 
     private final List<PortDeviceBinding> dispatchedItems = new ArrayList<>();
 

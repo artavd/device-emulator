@@ -6,17 +6,17 @@ import artavd.io.Port;
 import artavd.io.PortsRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.context.annotation.Bean;
 
-import java.util.Arrays;
-import java.util.HashMap;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 
+import static artavd.devices.utils.CommonUtils.asArray;
+import static artavd.devices.utils.CommonUtils.asSet;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -24,25 +24,16 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class FileDispatcherLoaderTest {
 
-    @InjectMocks
-    private FileDispatcherLoader loader;
-
     @Mock
     private PortsRepository portsRepository;
 
     @Mock
     private DevicesRepository devicesRepository;
 
-    public FileDispatcherLoaderTest() {
-        MockitoAnnotations.initMocks(this);
-    }
-
     @Test
     public void shouldBeCorrectlyLoadedFromFile() {
         // Given
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put(FileDispatcherLoader.FILENAME_PARAMETER, "src/test/resources/dispatch/correct.json");
-
+        // devices mock configuration
         DeviceController cl31 = Mockito.mock(DeviceController.class);
         when(devicesRepository.getController("CL31")).thenReturn(cl31);
         DeviceController lt31 = Mockito.mock(DeviceController.class);
@@ -50,6 +41,7 @@ public class FileDispatcherLoaderTest {
         DeviceController ptb220 = Mockito.mock(DeviceController.class);
         when(devicesRepository.getController("PTB220")).thenReturn(ptb220);
 
+        // ports mock configuration
         Port tcp3001 = Mockito.mock(Port.class);
         when(portsRepository.getOrCreatePort("TCP3001")).thenReturn(tcp3001);
         Port tcp3002 = Mockito.mock(Port.class);
@@ -61,33 +53,31 @@ public class FileDispatcherLoaderTest {
         Port com4 = Mockito.mock(Port.class);
         when(portsRepository.getOrCreatePort("COM4")).thenReturn(com4);
 
+        Path configFile = Paths.get("src/test/resources/dispatch/correct.json");
+        FileDispatcherLoader loader = new FileDispatcherLoader(configFile, portsRepository, devicesRepository);
+
         // When
-        Dispatcher dispatcher = loader.load(parameters);
+        Map<DeviceController, Port[]> loadedDispatchInfo = loader.load();
 
         // Then
-        assertEquals(Arrays.asList(cl31, lt31, ptb220), dispatcher.getDispatchedDevices());
+        assertEquals(asSet(cl31, lt31, ptb220), loadedDispatchInfo.keySet());
 
-        assertEquals(Arrays.asList(tcp3001, tcp3002, com2), dispatcher.getBoundPorts(cl31));
-        assertEquals(Arrays.asList(com2, com4), dispatcher.getBoundPorts(lt31));
-        assertEquals(Arrays.asList(com3), dispatcher.getBoundPorts(ptb220));
-
-        assertEquals(Arrays.asList(cl31), dispatcher.getBoundDevices(tcp3001));
-        assertEquals(Arrays.asList(cl31), dispatcher.getBoundDevices(tcp3002));
-        assertEquals(Arrays.asList(cl31, lt31), dispatcher.getBoundDevices(com2));
-        assertEquals(Arrays.asList(ptb220), dispatcher.getBoundDevices(com3));
-        assertEquals(Arrays.asList(lt31), dispatcher.getBoundDevices(com4));
+        assertArrayEquals(asArray(tcp3001, tcp3002, com2), loadedDispatchInfo.get(cl31));
+        assertArrayEquals(asArray(com2, com4), loadedDispatchInfo.get(lt31));
+        assertArrayEquals(asArray(com3), loadedDispatchInfo.get(ptb220));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfAnyDevicesWithEmptyPortList() {
         // Given
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put(FileDispatcherLoader.FILENAME_PARAMETER, "src/test/resources/dispatch/with-empty-ports.json");
         DeviceController device = Mockito.mock(DeviceController.class);
         when(devicesRepository.getController(anyString())).thenReturn(device);
 
+        Path configFile = Paths.get("src/test/resources/dispatch/with-empty-ports.json");
+        FileDispatcherLoader loader = new FileDispatcherLoader(configFile, portsRepository, devicesRepository);
+
         // When
-        loader.load(parameters);
+        loader.load();
 
         // Then
         // Exception is thrown
@@ -96,20 +86,13 @@ public class FileDispatcherLoaderTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfAnyDevicesWithoutPortList() {
         // Given
-        Map<String, String> parameters = new HashMap<>();
-        parameters.put(FileDispatcherLoader.FILENAME_PARAMETER, "src/test/resources/dispatch/without-ports.json");
+        Path configFile = Paths.get("src/test/resources/dispatch/without-ports.json");
+        FileDispatcherLoader loader = new FileDispatcherLoader(configFile, portsRepository, devicesRepository);
 
         // When
-        loader.load(parameters);
+        loader.load();
 
         // Then
         // Exception is thrown
     }
-
-    @Bean
-    public DispatcherLoader dispatcherLoader() {
-        return new FileDispatcherLoader();
-    }
-
-
 }

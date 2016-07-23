@@ -1,13 +1,6 @@
 package artavd.devices.console;
 
 import artavd.devices.EmulatorCoreConfiguration;
-import artavd.devices.controllers.DeviceController;
-import artavd.devices.core.DevicesRepository;
-import artavd.devices.dispatch.Dispatcher;
-import artavd.devices.dispatch.FileDispatcherLoader;
-import artavd.devices.dispatch.LocalDispatcher;
-import artavd.io.Port;
-import artavd.io.PortsRepository;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +11,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -75,25 +66,5 @@ public class DeviceEmulatorConsoleApplication {
                 .namingPattern("ui-thread")
                 .build();
         return Executors.newSingleThreadExecutor(uiThreadFactory);
-    }
-
-    @Bean
-    public Dispatcher dispatcher(Options options,
-                                 DevicesRepository devicesRepository,
-                                 PortsRepository portsRepository) {
-
-        // TODO: AA: move loading of dispatcher out from Spring initialization
-        if (options.getConfigurationFile() != null) {
-            Map<String, String> parameters = new HashMap<>();
-            parameters.put(FileDispatcherLoader.FILENAME_PARAMETER, options.getConfigurationFile());
-            return new FileDispatcherLoader().load(parameters);
-        }
-
-        DeviceController device = devicesRepository.getController(options.getDeviceName());
-        Port port = portsRepository.getOrCreatePort(options.getPortName());
-        Dispatcher dispatcher = new LocalDispatcher();
-        dispatcher.bind(device, port);
-
-        return dispatcher;
     }
 }

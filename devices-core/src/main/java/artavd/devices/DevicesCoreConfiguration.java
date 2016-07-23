@@ -1,7 +1,7 @@
 package artavd.devices;
 
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
-@ComponentScan("artavd.devices.core")
+@Configuration
 public class DevicesCoreConfiguration {
 }

@@ -1,66 +1,54 @@
 package artavd.devices.dispatch;
 
-import artavd.devices.controllers.DeviceController;
 import artavd.devices.core.DevicesRepository;
 import artavd.io.PortsRepository;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Map;
 
-public class FileDispatcherLoader implements DispatcherLoader {
+import static java.util.stream.Collectors.toMap;
 
-    public static final String FILENAME_PARAMETER = "FILENAME";
+public class FileDispatcherLoader extends AbstractDispatcherLoader {
 
-    @Autowired
-    private PortsRepository portsRepository;
+    private final Path configFile;
 
-    @Autowired
-    private DevicesRepository devicesRepository;
+    public FileDispatcherLoader(Path configFile,
+                                PortsRepository portsRepository,
+                                DevicesRepository devicesRepository) {
+        super(portsRepository, devicesRepository);
+        this.configFile = configFile;
+    }
 
     @Override
-    public Dispatcher load(Map<String, String> parameters) {
-        String filename = parameters.get(FILENAME_PARAMETER);
-        if (filename == null) {
-            throw new IllegalArgumentException(String.format(
-                    "Parameters for [%s] should contain '%s' parameter",
-                    FileDispatcherLoader.class.getSimpleName(), FILENAME_PARAMETER));
-        }
-
-        DispatcherConfigurationItem[] configuration = loadFromFile(filename);
-        return createDispatcher(configuration);
+    protected Map<String, String[]> loadNames() {
+        return Arrays.stream(readConfigItems(configFile))
+                .peek(FileDispatcherLoader::checkConfigItem)
+                .collect(toMap(item -> item.device, item -> item.ports));
     }
 
-    private Dispatcher createDispatcher(DispatcherConfigurationItem[] configuration) {
-        Dispatcher dispatcher = new LocalDispatcher();
-        for (DispatcherConfigurationItem item : configuration) {
-            if (item.ports == null || item.ports.length == 0) {
-                throw new IllegalArgumentException(String.format(
-                        "Port list should be specified for all devices, but was empty for '%s'", item.device));
-            }
-
-            DeviceController device = devicesRepository.getController(item.device);
-            Arrays.stream(item.ports)
-                    .map(portName -> portsRepository.getOrCreatePort(portName))
-                    .forEach(port -> dispatcher.bind(device, port));
-        }
-
-        return dispatcher;
-    }
-
-    private DispatcherConfigurationItem[] loadFromFile(String filename) {
-        File configFile = new File(filename);
+    private static DispatcherConfigurationItem[] readConfigItems(Path configFile) {
         ObjectMapper mapper = new ObjectMapper();
         try {
-            return mapper.reader(DispatcherConfigurationItem[].class).readValue(configFile);
+            return mapper.reader(DispatcherConfigurationItem[].class).readValue(configFile.toFile());
         } catch (IOException ex) {
             throw new IllegalArgumentException(String.format(
-                    "Cannot load device dispatcher configuration from file: '%s'", configFile.getAbsolutePath()), ex);
+                    "Cannot load device dispatcher configuration from file: '%s'", configFile.toAbsolutePath()), ex);
+        }
+    }
+
+    private static void checkConfigItem(DispatcherConfigurationItem item) {
+        if (item.ports == null || item.ports.length == 0) {
+            throw new IllegalArgumentException(String.format(
+                    "Port list should be specified for all devices, but was empty for '%s'", item.device));
+        }
+
+        if (item.device == null || item.device.isEmpty()) {
+            throw new IllegalArgumentException("Device name should be specified for all devices, but was not");
         }
     }
 

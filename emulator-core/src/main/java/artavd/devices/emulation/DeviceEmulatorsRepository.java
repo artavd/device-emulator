@@ -5,8 +5,6 @@ import artavd.devices.core.Device;
 import artavd.devices.core.DevicesRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 import rx.Scheduler;
 import rx.schedulers.Schedulers;
@@ -18,15 +16,13 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 @Repository
-final class DeviceEmulatorsRepository implements DevicesRepository {
+public final class DeviceEmulatorsRepository implements DevicesRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(DeviceEmulatorsRepository.class);
 
     private final List<DeviceEmulator> registeredEmulators = new ArrayList<>();
 
-    @Autowired
-    public DeviceEmulatorsRepository(
-            @Qualifier("emulator") ExecutorService emulatorExecutorService) {
+    public DeviceEmulatorsRepository(ExecutorService emulatorExecutorService) {
         Scheduler scheduler = Schedulers.from(emulatorExecutorService);
         registeredEmulators.add(new DeviceEmulator("test", scheduler));
     }

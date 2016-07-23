@@ -97,9 +97,6 @@ public class DeviceEmulator implements Device, DeviceController {
         if (currentState != state) {
             logger.info("Device [ {} ] moved from {} to {} state", getName(), currentState, state);
             stateSubject.onNext(state);
-            if (state == DeviceState.STOPPED) {
-                stateSubject.onCompleted();
-            }
         }
     }
 }
