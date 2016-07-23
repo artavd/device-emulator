@@ -1,8 +1,20 @@
 package artavd.devices.core;
 
-public interface DeviceMessage {
+public class DeviceMessage {
 
-    String getName();
+    private final String name;
+    private final String text;
 
-    String getText();
+    public DeviceMessage(String name, String text) {
+        this.name = name;
+        this.text = text;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getText() {
+        return text;
+    }
 }

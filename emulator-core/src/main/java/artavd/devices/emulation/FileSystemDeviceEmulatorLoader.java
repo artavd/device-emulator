@@ -59,7 +59,7 @@ public final class FileSystemDeviceEmulatorLoader implements DeviceEmulatorLoade
             return Optional.empty();
         }
 
-        DeviceEmulator emulator = DeviceEmulator.builder(name).withScheduler(emulatorScheduler).build();
+        DeviceEmulator emulator = DeviceEmulator.builder().withName(name).withScheduler(emulatorScheduler).build();
         return Optional.of(emulator);
     }
 

@@ -1,15 +1,12 @@
 package artavd.devices.controllers;
 
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
 public interface MessageController {
 
-    void setPeriod(long period, TimeUnit unit);
+    List<String> getValues();
 
-    Set<String> getValues();
+    void setValue(String valueName, String value);
 
-    void setValue(String name, String value);
-
-    void resetValue(String name);
+    void resetValue(String valueName);
 }
