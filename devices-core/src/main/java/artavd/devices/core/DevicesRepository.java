@@ -2,11 +2,7 @@ package artavd.devices.core;
 
 import artavd.devices.controllers.DeviceController;
 
-import java.util.List;
-
 public interface DevicesRepository {
-
-    List<Device> getDevices();
 
     Device getDevice(String name);
 
