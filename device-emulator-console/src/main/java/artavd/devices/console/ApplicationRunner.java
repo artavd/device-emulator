@@ -45,8 +45,23 @@ public class ApplicationRunner implements CommandLineRunner {
     @Qualifier("ui")
     private ExecutorService uiExecutorService;
 
+
+
     @Override
     public void run(String... args) throws Exception {
+        try {
+            doRun();
+        }
+        catch (Exception ex) {
+            logger.error("Device Emulator Console application FAILED with error: {}", ex.getMessage(), ex);
+        }
+        finally {
+            uiExecutorService.shutdown();
+            emulatorExecutorService.shutdown();
+        }
+    }
+
+    public void doRun() throws Exception {
         loadDispatcher();
         uiExecutorService.submit(this::waitForStop);
 
@@ -60,9 +75,6 @@ public class ApplicationRunner implements CommandLineRunner {
                 .last();
 
         logger.info("All emulators has been stopped. Application is being closed...");
-
-        uiExecutorService.shutdown();
-        emulatorExecutorService.shutdown();
     }
 
     private void loadDispatcher() {

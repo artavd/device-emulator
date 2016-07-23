@@ -23,6 +23,10 @@ public final class Options {
             depends = "-d", forbids = "-c")
     private String portName;
 
+    @Option(name = "-s", aliases = { "--storage" }, metaVar = "<DIR>",
+            usage = "Path to directory with device emulator configurations")
+    private String storageDirectory = "devices";
+
     private final CmdLineParser parser = new CmdLineParser(this);
     private String errorMessage = null;
 
@@ -63,6 +67,11 @@ public final class Options {
     public String getPortName() {
         assertNoErrors();
         return portName;
+    }
+
+    public String getStorageDirectory() {
+        assertNoErrors();
+        return storageDirectory;
     }
 
     private void assertNoErrors() {
