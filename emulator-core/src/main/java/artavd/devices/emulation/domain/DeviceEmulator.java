@@ -1,4 +1,4 @@
-package artavd.devices.emulation;
+package artavd.devices.emulation.domain;
 
 import artavd.devices.controllers.DeviceController;
 import artavd.devices.controllers.MessageController;
@@ -24,7 +24,7 @@ public class DeviceEmulator implements Device, DeviceController {
     private final Scheduler scheduler;
     private final BehaviorSubject<DeviceState> stateSubject = BehaviorSubject.create(DeviceState.STOPPED);
 
-    public DeviceEmulator(String name, Scheduler scheduler) {
+    private DeviceEmulator(String name, Scheduler scheduler) {
         this.name = name;
         this.scheduler = scheduler;
     }
@@ -92,11 +92,33 @@ public class DeviceEmulator implements Device, DeviceController {
         return null;
     }
 
+    public static Builder builder(String name) {
+        return new Builder(name);
+    }
+
     private void updateState(DeviceState state) {
         DeviceState currentState = getCurrentState();
         if (currentState != state) {
             logger.info("Device [ {} ] moved from {} to {} state", getName(), currentState, state);
             stateSubject.onNext(state);
+        }
+    }
+
+    public final static class Builder {
+        private String name;
+        private Scheduler scheduler;
+
+        private Builder(String name) {
+            this.name = name;
+        }
+
+        public Builder withScheduler(Scheduler scheduler) {
+            this.scheduler = scheduler;
+            return this;
+        }
+
+        public DeviceEmulator build() {
+            return new DeviceEmulator(name, scheduler);
         }
     }
 }

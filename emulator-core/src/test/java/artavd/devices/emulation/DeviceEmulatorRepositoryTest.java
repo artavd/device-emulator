@@ -2,6 +2,7 @@ package artavd.devices.emulation;
 
 import artavd.devices.controllers.DeviceController;
 import artavd.devices.core.Device;
+import artavd.devices.emulation.domain.DeviceEmulator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
