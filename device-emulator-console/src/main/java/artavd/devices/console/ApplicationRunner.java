@@ -45,8 +45,6 @@ public class ApplicationRunner implements CommandLineRunner {
     @Qualifier("ui")
     private ExecutorService uiExecutorService;
 
-
-
     @Override
     public void run(String... args) throws Exception {
         try {

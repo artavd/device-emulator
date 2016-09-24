@@ -53,7 +53,7 @@ public final class DeviceEmulatorsRepository implements DevicesRepository {
 
     @PreDestroy
     private void onDestroy() {
-        logger.info("Device Emulator repository closing...");
+        logger.info("Device Emulator repository is being closed...");
         registeredEmulators.forEach(DeviceEmulator::stop);
     }
 

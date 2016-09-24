@@ -2,6 +2,7 @@ package artavd.devices.dispatch;
 
 import artavd.devices.controllers.DeviceController;
 import artavd.devices.core.DevicesRepository;
+import artavd.devices.core.DevicesUtils;
 import artavd.io.Port;
 import artavd.io.PortsRepository;
 
@@ -26,7 +27,7 @@ public abstract class AbstractDispatcherLoader implements DispatcherLoader {
         return loadNames()
                 .entrySet().stream()
                 .collect(toMap(
-                        entry -> getDeviceController(entry.getKey(), devicesRepository),
+                        entry -> DevicesUtils.getDeviceController(devicesRepository, entry.getKey()),
                         entry -> parsePorts(entry.getValue())));
     }
 
@@ -37,10 +38,4 @@ public abstract class AbstractDispatcherLoader implements DispatcherLoader {
     }
 
     protected abstract Map<String, String[]> loadNames();
-
-    public static DeviceController getDeviceController(String name, DevicesRepository repository) {
-        return repository.getController(name)
-                .orElseThrow(() -> new IllegalArgumentException(String.format(
-                        "Device Controller for '%s' device is not registered!", name)));
-    }
 }

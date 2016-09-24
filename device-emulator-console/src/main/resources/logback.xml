@@ -1,5 +1,13 @@
 <configuration>
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/device-emulator-console.log</file>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ERROR-FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/device-emulator-console.errors.log</file>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
@@ -7,15 +15,16 @@
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%msg%n</pattern>
+            <pattern>%msg%n%nopex</pattern>
         </encoder>
     </appender>
 
-    <!--<logger name="artavd.devices.console" level="info">-->
-        <!--<appender-ref ref="CONSOLE" />-->
-    <!--</logger>-->
+    <logger name="artavd.devices" level="info">
+        <appender-ref ref="CONSOLE" />
+    </logger>
 
     <root level="debug">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+        <appender-ref ref="ERROR-FILE" level="error" />
     </root>
 </configuration>

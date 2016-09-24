@@ -34,7 +34,7 @@ public class DeviceEmulatorConsoleApplication {
             System.exit(1);
         }
 
-        logger.info("Device Emulator application starting...");
+        logger.info("Device Emulator application is being started...");
         SpringApplication application = new SpringApplicationBuilder()
                 .sources(DeviceEmulatorConsoleApplication.class)
                 .bannerMode(Banner.Mode.OFF)
@@ -73,7 +73,7 @@ public class DeviceEmulatorConsoleApplication {
     }
 
     @Bean
-    public DeviceEmulatorLoader filesystemDeviceEmulatorLoader(
+    public DeviceEmulatorLoader fileSystemDeviceEmulatorLoader(
             @Qualifier("emulator") ExecutorService executorService,
             Options options) {
         return new FileSystemDeviceEmulatorLoader(Paths.get(options.getStorageDirectory()), executorService);

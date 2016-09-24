@@ -41,7 +41,7 @@ public final class FileSystemDeviceEmulatorLoader implements DeviceEmulatorLoade
 
         Path devicePath = emulatorConfigStoragePath.resolve(format(FILE_NAME_PATTERN, name));
         if (!Files.exists(devicePath)) {
-            logger.debug("Storage doesn't contain configuration for '{}' device", name);
+            logger.debug("Storage doesn't contain configuration for '{}' device: {}", name, devicePath);
             return Optional.empty();
         }
 

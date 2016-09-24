@@ -1,6 +1,7 @@
 ext {
     springVersion = "4.2.6.RELEASE"
     rxVersion = "1.1.6"
+    slf4jVersion = "1.7.21"
 }
 
 subprojects { subproject ->
@@ -26,7 +27,7 @@ subprojects { subproject ->
 
     dependencies {
         compile "org.springframework:spring-context:${springVersion}"
-        compile "org.slf4j:slf4j-api:1.7.12"
+        compile "org.slf4j:slf4j-api:${slf4jVersion}"
 
         testCompile "junit:junit:4.12"
     }

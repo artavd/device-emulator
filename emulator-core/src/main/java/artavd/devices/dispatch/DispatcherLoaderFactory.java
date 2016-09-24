@@ -2,6 +2,7 @@ package artavd.devices.dispatch;
 
 import artavd.devices.controllers.DeviceController;
 import artavd.devices.core.DevicesRepository;
+import artavd.devices.core.DevicesUtils;
 import artavd.io.Port;
 import artavd.io.PortsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public final class DispatcherLoaderFactory {
 
     public DispatcherLoader createSingleLoader(String deviceName, String portName) {
         return () -> {
-            DeviceController device = AbstractDispatcherLoader.getDeviceController(deviceName, devicesRepository);
+            DeviceController device = DevicesUtils.getDeviceController(devicesRepository, deviceName);
             Port port = portsRepository.getOrCreatePort(portName);
             Map<DeviceController, Port[]> resultMap = new HashMap<>();
             resultMap.put(device, new Port[] { port} );

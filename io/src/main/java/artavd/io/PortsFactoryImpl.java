@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 @Component
 public final class PortsFactoryImpl implements PortsFactory {
@@ -18,13 +19,18 @@ public final class PortsFactoryImpl implements PortsFactory {
 
             @Override
             public boolean match(Map<String, String> parameters) {
-                return parameters.get(PortsFactory.NAME).toUpperCase().startsWith(DESCRIPTOR) ||
-                        Objects.equals(DESCRIPTOR, parameters.get(PortsFactory.TYPE).toUpperCase());
+                return matchParameter(parameters, PortsFactory.NAME, x -> x.toUpperCase().startsWith(DESCRIPTOR)) ||
+                        matchParameter(parameters, PortsFactory.TYPE, x -> x.toUpperCase().equals(DESCRIPTOR));
             }
 
             @Override
             public Port create(Map<String, String> parameters) {
                 return new ConsolePort(parameters.get(PortsFactory.NAME));
+            }
+
+            private boolean matchParameter(Map<String, String> parameters, String name, Predicate<String> predicate) {
+                String value = parameters.get(name);
+                return value != null && predicate.test(value);
             }
         });
     }
