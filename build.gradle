@@ -1,11 +1,17 @@
-ext {
-    springVersion = "4.2.6.RELEASE"
-    rxVersion = "1.1.6"
-    slf4jVersion = "1.7.21"
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath('io.spring.gradle:dependency-management-plugin:0.5.3.RELEASE')
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+    }
 }
 
 subprojects { subproject ->
     apply plugin: "java"
+    apply plugin: 'io.spring.dependency-management'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
@@ -25,10 +31,14 @@ subprojects { subproject ->
         }
     }
 
-    dependencies {
-        compile "org.springframework:spring-context:${springVersion}"
-        compile "org.slf4j:slf4j-api:${slf4jVersion}"
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
+        }
+    }
 
+    dependencies {
+        compile "org.slf4j:slf4j-api"
         testCompile "junit:junit:4.12"
     }
 }

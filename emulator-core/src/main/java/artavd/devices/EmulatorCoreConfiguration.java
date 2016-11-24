@@ -6,15 +6,16 @@ import artavd.devices.dispatch.DispatcherImpl;
 import artavd.devices.dispatch.DispatcherLoaderFactory;
 import artavd.devices.emulation.DeviceEmulatorLoader;
 import artavd.devices.emulation.DeviceEmulatorsRepository;
-import artavd.io.IOConfiguration;
+import artavd.io.PortsFactory;
+import artavd.io.PortsFactoryImpl;
+import artavd.io.PortsRepository;
+import artavd.io.PortsRepositoryImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 import java.util.List;
 
 @Configuration
-@Import({ DevicesCoreConfiguration.class, IOConfiguration.class })
 public class EmulatorCoreConfiguration {
 
     @Bean
@@ -30,5 +31,15 @@ public class EmulatorCoreConfiguration {
     @Bean
     public DevicesRepository emulatorsRepository(List<DeviceEmulatorLoader> loaders) {
         return new DeviceEmulatorsRepository(loaders);
+    }
+
+    @Bean
+    public PortsFactory portsFactory() {
+        return new PortsFactoryImpl();
+    }
+
+    @Bean
+    public PortsRepository portsRepository() {
+        return new PortsRepositoryImpl();
     }
 }

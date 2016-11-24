@@ -10,10 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PreDestroy;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public final class DeviceEmulatorsRepository implements DevicesRepository {
@@ -26,6 +24,13 @@ public final class DeviceEmulatorsRepository implements DevicesRepository {
     @Autowired
     public DeviceEmulatorsRepository(List<DeviceEmulatorLoader> deviceEmulatorLoaders) {
         this.deviceEmulatorLoaders = deviceEmulatorLoaders;
+    }
+
+    @Override
+    public List<Device> getDevices() {
+        return registeredEmulators.stream()
+                .sorted(Comparator.comparing(DeviceEmulator::getName))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -53,7 +58,7 @@ public final class DeviceEmulatorsRepository implements DevicesRepository {
 
     @PreDestroy
     private void onDestroy() {
-        logger.info("Device Emulator repository is being closed...");
+        logger.debug("Device Emulator repository is being closed...");
         registeredEmulators.forEach(DeviceEmulator::stop);
     }
 

@@ -21,12 +21,11 @@ public final class MessageProducer implements MessageController {
     private final String formatString;
     private final MessageValueProducer[] valueProducers;
 
-    private MessageProducer(String name, long intervalInMilliseconds, String formatString,
-                           MessageValueProducer[] valueProducers) {
-        this.name = name;
-        this.intervalInMilliseconds = intervalInMilliseconds;
-        this.formatString = formatString;
-        this.valueProducers = valueProducers;
+    private MessageProducer(Builder builder) {
+        this.name = builder.name;
+        this.intervalInMilliseconds = builder.interval;
+        this.formatString = builder.formatString;
+        this.valueProducers = builder.valueProducers.stream().toArray(MessageValueProducer[]::new);
     }
 
     public DeviceMessage nextMessage() {
@@ -127,11 +126,7 @@ public final class MessageProducer implements MessageController {
 
             checkValueProducersMatchFormatString();
 
-            return new MessageProducer(
-                    name,
-                    interval,
-                    formatString,
-                    valueProducers.stream().toArray(MessageValueProducer[]::new));
+            return new MessageProducer(this);
         }
 
         private void checkValueProducersMatchFormatString() {

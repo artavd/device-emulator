@@ -36,22 +36,24 @@ public class FileDispatcherLoaderTest {
         // Given
         // devices mock configuration
         DeviceController cl31 = Mockito.mock(DeviceController.class);
-        when(devicesRepository.getController("CL31")).thenReturn(Optional.of(cl31));
         DeviceController lt31 = Mockito.mock(DeviceController.class);
-        when(devicesRepository.getController("LT31")).thenReturn(Optional.of(lt31));
         DeviceController ptb220 = Mockito.mock(DeviceController.class);
+
+        when(devicesRepository.getController("CL31")).thenReturn(Optional.of(cl31));
+        when(devicesRepository.getController("LT31")).thenReturn(Optional.of(lt31));
         when(devicesRepository.getController("PTB220")).thenReturn(Optional.of(ptb220));
 
         // ports mock configuration
         Port tcp3001 = Mockito.mock(Port.class);
-        when(portsRepository.getOrCreatePort("TCP3001")).thenReturn(tcp3001);
         Port tcp3002 = Mockito.mock(Port.class);
-        when(portsRepository.getOrCreatePort("TCP3002")).thenReturn(tcp3002);
         Port com2 = Mockito.mock(Port.class);
-        when(portsRepository.getOrCreatePort("COM2")).thenReturn(com2);
         Port com3 = Mockito.mock(Port.class);
-        when(portsRepository.getOrCreatePort("COM3")).thenReturn(com3);
         Port com4 = Mockito.mock(Port.class);
+
+        when(portsRepository.getOrCreatePort("TCP3001")).thenReturn(tcp3001);
+        when(portsRepository.getOrCreatePort("TCP3002")).thenReturn(tcp3002);
+        when(portsRepository.getOrCreatePort("COM2")).thenReturn(com2);
+        when(portsRepository.getOrCreatePort("COM3")).thenReturn(com3);
         when(portsRepository.getOrCreatePort("COM4")).thenReturn(com4);
 
         Path configFile = Paths.get("src/test/resources/dispatch/correct.json");

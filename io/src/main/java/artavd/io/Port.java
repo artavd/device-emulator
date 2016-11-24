@@ -10,6 +10,8 @@ public interface Port {
 
     String getName();
 
+    String getParameters();
+
     PortState getCurrentState();
 
     Observable<PortState> getStateFeed();

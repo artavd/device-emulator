@@ -23,4 +23,19 @@ public class DispatcherUtils {
     public static void unbindAll(Dispatcher dispatcher, DeviceController device, Port[] ports) {
         Arrays.stream(ports).forEach(port -> dispatcher.unbind(device, port));
     }
+
+    public static void unbindAll(Dispatcher dispatcher, DeviceController device) {
+        dispatcher.getBoundPorts(device).forEach(port -> dispatcher.unbind(device, port));
+    }
+
+    public static void unbindAll(Dispatcher dispatcher, Port port) {
+        dispatcher.getBoundDevices(port).forEach(device -> dispatcher.unbind(device, port));
+    }
+
+    public static void startAll(Dispatcher dispatcher) {
+        dispatcher.getDispatchedDevices().forEach(device -> {
+            dispatcher.getBoundPorts(device).forEach(Port::connect);
+            device.start();
+        });
+    }
 }

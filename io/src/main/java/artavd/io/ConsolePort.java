@@ -10,8 +10,11 @@ public class ConsolePort extends AbstractPort {
 
     private static final PrintStream out = System.out;
 
-    public ConsolePort(String name) {
+    private final String descriptor;
+
+    public ConsolePort(String name, String descriptor) {
         super(PortTypes.CONSOLE, name);
+        this.descriptor = descriptor;
     }
 
     @Override
@@ -28,7 +31,8 @@ public class ConsolePort extends AbstractPort {
 
     @Override
     protected boolean doTransmit(byte[] data) {
-        out.println(new String(data));
+        String output = (descriptor == null ? "" : "[" + descriptor + "]: ") + new String(data);
+        out.println(output);
         return true;
     }
 

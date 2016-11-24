@@ -38,10 +38,10 @@ public final class DeviceEmulator implements Device, DeviceController {
 
     private Subscription subscription;
 
-    private DeviceEmulator(String name, Scheduler scheduler, MessageProducer[] messageProducers) {
-        this.name = name;
-        this.scheduler = scheduler;
-        this.messageProducers = messageProducers;
+    private DeviceEmulator(Builder builder) {
+        this.name = builder.name;
+        this.scheduler = builder.scheduler;
+        this.messageProducers = builder.messageProducers.stream().toArray(MessageProducer[]::new);
 
         List<Observable<DeviceMessage>> feedsByProducers = Arrays.stream(messageProducers)
                 .map(this::getFeedForProducer)
@@ -184,7 +184,7 @@ public final class DeviceEmulator implements Device, DeviceController {
                 throw new IllegalStateException("At least one message producer should be specified to build DeviceEmulator");
             }
 
-            return new DeviceEmulator(name, scheduler, messageProducers.stream().toArray(MessageProducer[]::new));
+            return new DeviceEmulator(this);
         }
     }
 }

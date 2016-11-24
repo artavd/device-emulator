@@ -27,13 +27,18 @@ public final class Options {
             usage = "Path to directory with device emulator configurations")
     private String storageDirectory = "devices";
 
+    @Option(name = "--service", metaVar = "<PORT>",
+            usage = "If specified then application will be started in server mode. It will listen specified TCP port " +
+                    "and will provide REST API on this port.")
+    private Integer restApiPort;
+
     private final CmdLineParser parser = new CmdLineParser(this);
     private String errorMessage = null;
 
     public boolean tryParseArguments(String[] args) {
         try {
             parser.parseArgument(args);
-            if (configurationFile == null && deviceName == null) {
+            if (configurationFile == null && deviceName == null && restApiPort == null) {
                 errorMessage = "One of '-c' or '-d' options should be specified";
                 return false;
             }
@@ -72,6 +77,11 @@ public final class Options {
     public String getStorageDirectory() {
         assertNoErrors();
         return storageDirectory;
+    }
+
+    public Optional<Integer> getRestApiPort() {
+        assertNoErrors();
+        return Optional.ofNullable(restApiPort);
     }
 
     private void assertNoErrors() {

@@ -1,13 +1,28 @@
 <configuration>
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <appender name="LOG" class="ch.qos.logback.core.FileAppender">
         <file>logs/device-emulator-console.log</file>
+        <append>false</append>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <appender name="ERROR-FILE" class="ch.qos.logback.core.FileAppender">
+    <appender name="ERRORS" class="ch.qos.logback.core.FileAppender">
         <file>logs/device-emulator-console.errors.log</file>
+        <append>false</append>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <appender name="SPRING" class="ch.qos.logback.core.FileAppender">
+        <file>logs/device-emulator-console.spring.log</file>
+        <append>false</append>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
@@ -19,12 +34,17 @@
         </encoder>
     </appender>
 
-    <logger name="artavd.devices" level="info">
-        <appender-ref ref="CONSOLE" />
+    <logger name="org.springframework" level="debug">
+        <appender-ref ref="SPRING" />
     </logger>
 
-    <root level="debug">
-        <appender-ref ref="FILE" />
-        <appender-ref ref="ERROR-FILE" level="error" />
+    <logger name="artavd.devices" level="debug">
+        <appender-ref ref="CONSOLE" level="info" />
+        <appender-ref ref="LOG" />
+    </logger>
+
+    <root level="error">
+        <appender-ref ref="ERRORS" />
     </root>
+
 </configuration>

@@ -49,9 +49,6 @@ public final class DispatcherImpl implements Dispatcher {
             return false;
         }
 
-        port.connect();
-        device.start();
-
         PortDeviceBinding newBinding = createPortDeviceBinding(device, port);
         newBinding.bind();
         dispatchedItems.add(newBinding);
@@ -68,14 +65,6 @@ public final class DispatcherImpl implements Dispatcher {
 
         dispatchedItems.remove(portDevice.get());
         portDevice.get().unbind();
-
-        if (getBoundPorts(device).isEmpty()) {
-            device.stop();
-        }
-
-        if (getBoundDevices(port).isEmpty()) {
-            port.disconnect();
-        }
 
         return true;
     }
@@ -112,7 +101,7 @@ public final class DispatcherImpl implements Dispatcher {
 
         public void bind() {
             Device device = getController().getDevice();
-            device.getMessageFeed()
+            subscription = device.getMessageFeed()
                     .subscribe(m -> {
                         if (port.getCurrentState().canTransmit()) {
                             port.transmit(m.getText().getBytes());

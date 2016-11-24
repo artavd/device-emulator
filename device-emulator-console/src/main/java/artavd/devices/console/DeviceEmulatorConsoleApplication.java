@@ -1,81 +1,58 @@
 package artavd.devices.console;
 
 import artavd.devices.EmulatorCoreConfiguration;
-import artavd.devices.emulation.DeviceEmulatorLoader;
-import artavd.devices.emulation.FileSystemDeviceEmulatorLoader;
-import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import artavd.devices.rest.RestApiAutoConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
-import java.nio.file.Paths;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-
-@Configuration
-@Import(EmulatorCoreConfiguration.class)
+@SpringBootApplication
 public class DeviceEmulatorConsoleApplication {
 
     private static final Logger logger = LoggerFactory.getLogger(DeviceEmulatorConsoleApplication.class);
-    private static Options options;
-
-    public static void main(String[] args) {
-        options = new Options();
-        boolean isArgumentParsed = options.tryParseArguments(args);
-        if (!isArgumentParsed) {
-            logger.error(options.getUsage());
-            System.exit(1);
-        }
-
-        logger.info("Device Emulator application is being started...");
-        SpringApplication application = new SpringApplicationBuilder()
-                .sources(DeviceEmulatorConsoleApplication.class)
-                .bannerMode(Banner.Mode.OFF)
-                .logStartupInfo(false)
-                .registerShutdownHook(true)
-                .build();
-
-        application.run(args);
-    }
+    private static final Options options = new Options();
 
     @Bean
     public static Options options() {
         return options;
     }
 
-    @Bean
-    public static ApplicationRunner runner() {
-        return new ApplicationRunner();
+    public static void main(String[] args) {
+        boolean areArgumentsParsed = options.tryParseArguments(args);
+        if (!areArgumentsParsed) {
+            logger.error(options.getUsage());
+            System.exit(1);
+        }
+
+        logger.info("Device Emulator application is being started...");
+
+        SpringApplicationBuilder applicationBuilder = new SpringApplicationBuilder();
+        configureConsoleApplication(applicationBuilder);
+        options.getRestApiPort().ifPresent(port -> configureRestApi(applicationBuilder, port));
+
+        SpringApplication application = applicationBuilder.build();
+        ConfigurableApplicationContext applicationContext = application.run(args);
+
+        applicationContext.close();
     }
 
-    @Bean(name = "emulator")
-    public ExecutorService emulatorExecutorService() {
-        ThreadFactory emulatorThreadFactory = new BasicThreadFactory.Builder()
-                .namingPattern("emulator-thread-%d")
-                .daemon(true)
-                .build();
-        return Executors.newCachedThreadPool(emulatorThreadFactory);
+    private static void configureConsoleApplication(SpringApplicationBuilder applicationBuilder) {
+        applicationBuilder
+                .sources(DeviceEmulatorConsoleApplication.class, EmulatorCoreConfiguration.class)
+                .bannerMode(Banner.Mode.OFF)
+                .registerShutdownHook(true)
+                .web(false);
     }
 
-    @Bean(name = "ui")
-    public ExecutorService uiExecutorService() {
-        ThreadFactory uiThreadFactory = new BasicThreadFactory.Builder()
-                .namingPattern("ui-thread")
-                .build();
-        return Executors.newSingleThreadExecutor(uiThreadFactory);
-    }
-
-    @Bean
-    public DeviceEmulatorLoader fileSystemDeviceEmulatorLoader(
-            @Qualifier("emulator") ExecutorService executorService,
-            Options options) {
-        return new FileSystemDeviceEmulatorLoader(Paths.get(options.getStorageDirectory()), executorService);
+    private static void configureRestApi(SpringApplicationBuilder applicationBuilder, Integer port) {
+        applicationBuilder
+                .properties("server.port=" + port)
+                .sources(RestApiAutoConfiguration.class)
+                .web(true);
     }
 }

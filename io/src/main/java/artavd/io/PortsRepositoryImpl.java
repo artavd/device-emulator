@@ -2,22 +2,21 @@ package artavd.io;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-@Repository
 public class PortsRepositoryImpl implements PortsRepository {
 
     private static final Logger logger = LoggerFactory.getLogger(PortsRepositoryImpl.class);
 
     private final List<Port> registerPorts = new ArrayList<>();
 
-    @Autowired
+    @Resource
     private PortsFactory portsFactory;
 
     public List<Port> getRegisterPorts() {
@@ -32,9 +31,10 @@ public class PortsRepositoryImpl implements PortsRepository {
     }
 
     @Override
-    public Port getOrCreatePort(String name) {
+    public Port getOrCreatePort(Map<String, String> parameters) {
+        String name = parameters.get(PortParameters.NAME);
         return getPort(name).orElseGet(() -> {
-            Port newPort = portsFactory.createPort(name);
+            Port newPort = portsFactory.createPort(parameters);
             registerPorts.add(newPort);
             return newPort;
         });
@@ -42,7 +42,7 @@ public class PortsRepositoryImpl implements PortsRepository {
 
     @PreDestroy
     private void onDestroy() {
-        logger.info("Ports repository closing...");
+        logger.debug("Ports repository closing...");
         registerPorts.forEach(Port::disconnect);
     }
 }

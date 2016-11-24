@@ -32,6 +32,11 @@ public abstract class AbstractPort implements Port {
     }
 
     @Override
+    public String getParameters() {
+        return "";
+    }
+
+    @Override
     public final PortState getCurrentState() {
         return currentState.getValue();
     }
@@ -48,7 +53,6 @@ public abstract class AbstractPort implements Port {
             return CompletableFuture.completedFuture(PortState.CONNECTED);
         }
 
-        logger.debug("Port [ {} ]: connecting...", getName());
         updateState(PortState.CONNECTING);
         return doConnect();
     }
@@ -60,7 +64,6 @@ public abstract class AbstractPort implements Port {
             return CompletableFuture.completedFuture(PortState.DISCONNECTED);
         }
 
-        logger.debug("Port [ {} ]: disconnecting...", getName());
         updateState(PortState.DISCONNECTING);
         return doDisconnect();
     }
@@ -88,7 +91,11 @@ public abstract class AbstractPort implements Port {
     }
 
     protected final void updateState(PortState state) {
-        currentState.onNext(state);
+        PortState previousState = getCurrentState();
+        if (!state.equals(previousState)) {
+            logger.info("Port [ {} ] moved from {} to {} state", getName(), previousState.getName(), state.getName());
+            currentState.onNext(state);
+        }
     }
 
     protected abstract Future<PortState> doConnect();

@@ -1,0 +1,12 @@
+devices:
+  mock: true
+
+rest:
+  timeouts:
+    default: 10000
+
+spring:
+  jmx:
+    enabled: false
+  cache:
+    type: NONE

@@ -23,3 +23,7 @@ This is an application that represents the Device Emulator service. It supposed 
 ## How to run?
 
 <TBD> Modules and options description
+
+## REST API documentation:
+
+<TBD> Description of REST API links and functions
