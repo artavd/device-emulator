@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/artavd/device-emulator.svg)](http://travis-ci.org/artavd/device-emulator)
+
 # Device Emulator
 
 This is an application that represents the Device Emulator service. It supposed to be executed on the server with configured ports (TCP, UDP, Serial or other). Each of these ports is bound to specific device emulator (or even real device) that send a messages in the custom format. So this server can be used as aggregator for different types of messaging devices or can emulate the behaviour of them.
