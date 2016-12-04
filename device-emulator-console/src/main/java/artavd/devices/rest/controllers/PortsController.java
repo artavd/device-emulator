@@ -1,6 +1,7 @@
 package artavd.devices.rest.controllers;
 
 import artavd.devices.rest.response.PortDto;
+import artavd.devices.utils.CommonUtils;
 import artavd.io.Port;
 import artavd.io.PortState;
 import artavd.io.PortsRepository;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
@@ -65,24 +65,24 @@ public class PortsController {
     }
 
     private void doConnect(Port port) throws Exception {
-        Future<PortState> state = port.connect();
-        try {
-            state.get(connectPortTimeout, TimeUnit.MILLISECONDS);
-        } catch (TimeoutException ex) {
-            logger.warn(
-                    "Port [ {} ] is not connected after timeout {} seconds",
-                    port.getName(), connectPortTimeout);
-        }
+        port.connect();
+        waitForTerminalState(port, connectPortTimeout, "is not connected");
     }
 
     private void doDisconnect(Port port) throws Exception {
-        Future<PortState> state = port.disconnect();
+        port.disconnect();
+        waitForTerminalState(port, disconnectPortTimeout, "is not disconnected");
+    }
+
+    private void waitForTerminalState(Port port, long timeoutInMilliseconds, String message) {
         try {
-            state.get(disconnectPortTimeout, TimeUnit.MILLISECONDS);
+            CommonUtils.waitFor(
+                    port.getStateFeed(), PortState::isTerminal,
+                    timeoutInMilliseconds, TimeUnit.MILLISECONDS);
         } catch (TimeoutException ex) {
             logger.warn(
-                    "Port [ {} ] is not disconnected after timeout {} seconds",
-                    port.getName(), disconnectPortTimeout);
+                    "Port [ {} ] {} after timeout {} milliseconds",
+                    port.getName(), message, timeoutInMilliseconds);
         }
     }
 }

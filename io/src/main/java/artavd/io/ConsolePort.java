@@ -3,8 +3,6 @@ package artavd.io;
 import rx.Observable;
 
 import java.io.PrintStream;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 public class ConsolePort extends AbstractPort {
 
@@ -18,21 +16,19 @@ public class ConsolePort extends AbstractPort {
     }
 
     @Override
-    protected Future<PortState> doConnect() {
+    protected void doConnect() {
         updateState(PortState.CONNECTED);
-        return CompletableFuture.completedFuture(getCurrentState());
     }
 
     @Override
-    protected Future<PortState> doDisconnect() {
+    protected void doDisconnect() {
         updateState(PortState.DISCONNECTED);
-        return CompletableFuture.completedFuture(getCurrentState());
     }
 
     @Override
     protected boolean doTransmit(byte[] data) {
         String output = (descriptor == null ? "" : "[" + descriptor + "]: ") + new String(data);
-        out.println(output);
+        out.print(output);
         return true;
     }
 

@@ -79,15 +79,15 @@ public final class PortCommands implements CommandMarker {
     // port status
 
     private static Ansi.Color toColor(PortState state) {
-        if (state.equals(PortState.DISCONNECTED) || state.isError()) {
+        if (state.in(PortState.DISCONNECTED) || state.isError()) {
             return Ansi.Color.RED;
         }
 
-        if (state.equals(PortState.CONNECTED)) {
+        if (state.in(PortState.CONNECTED)) {
             return Ansi.Color.GREEN;
         }
 
-        if (state.equals(PortState.CONNECTING) || state.equals(PortState.RECONNECTING)) {
+        if (!state.isTerminal()) {
             return Ansi.Color.YELLOW;
         }
 

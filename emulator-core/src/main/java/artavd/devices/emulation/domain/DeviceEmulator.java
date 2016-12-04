@@ -119,6 +119,7 @@ public final class DeviceEmulator implements Device, DeviceController {
         long interval = producer.getIntervalInMilliseconds();
         return Observable
                 .interval(interval, TimeUnit.MILLISECONDS, scheduler)
+                .subscribeOn(scheduler)
                 .takeUntil(getStateFeed().filter(state -> state == DeviceState.STOPPED))
                 .repeatWhen(_unused_ -> getStateFeed().filter(state -> state == DeviceState.STARTED), scheduler)
                 .map(_unused_ -> producer.nextMessage());

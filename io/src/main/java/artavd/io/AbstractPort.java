@@ -5,9 +5,6 @@ import org.slf4j.LoggerFactory;
 import rx.Observable;
 import rx.subjects.BehaviorSubject;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
-
 public abstract class AbstractPort implements Port {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractPort.class);
@@ -47,36 +44,38 @@ public abstract class AbstractPort implements Port {
     }
 
     @Override
-    public final Future<PortState> connect() {
-        if (getCurrentState() == PortState.CONNECTED) {
-            logger.warn("Port [ {} ]: is already connected");
-            return CompletableFuture.completedFuture(PortState.CONNECTED);
+    public final void connect() {
+        PortState currentState = getCurrentState();
+        if (!currentState.in(PortState.DISCONNECTED)) {
+            logger.warn("Port [ {} ]: cannot connect to port in {} state", getName(), currentState.getName());
+            return;
         }
 
         updateState(PortState.CONNECTING);
-        return doConnect();
+        doConnect();
     }
 
     @Override
-    public final Future<PortState> disconnect() {
-        if (getCurrentState() == PortState.DISCONNECTED) {
-            logger.warn("Port [ {} ]: is already disconnected");
-            return CompletableFuture.completedFuture(PortState.DISCONNECTED);
+    public final void disconnect() {
+        PortState currentState = getCurrentState();
+        if (currentState.in(PortState.DISCONNECTED, PortState.DISCONNECTING)) {
+            logger.warn("Port [ {} ]: cannot disconnect from port in {} state", getName(), currentState.getName());
+            return;
         }
 
         updateState(PortState.DISCONNECTING);
-        return doDisconnect();
+        doDisconnect();
     }
 
     @Override
     public final boolean transmit(byte[] data) {
         PortState currentState = getCurrentState();
         if (!currentState.canTransmit()) {
-            logger.warn("Port [ {} ]: can't transmit data to port with '{}' state", getName(), currentState.getName());
+            logger.warn("Port [ {} ]: can't transmit data to port with {} state", getName(), currentState.getName());
             return false;
         }
 
-        logger.debug("Port [ {} ]: data transmitting. Package length: {}", getName(), data.length);
+        logger.trace("Port [ {} ]: data transmitting. Package length: {}", getName(), data.length);
         return doTransmit(data);
     }
 
@@ -90,6 +89,10 @@ public abstract class AbstractPort implements Port {
 
     }
 
+    protected final void updateState(PortState.Builder state) {
+        updateState(state.build());
+    }
+
     protected final void updateState(PortState state) {
         PortState previousState = getCurrentState();
         if (!state.equals(previousState)) {
@@ -98,11 +101,13 @@ public abstract class AbstractPort implements Port {
         }
     }
 
-    protected abstract Future<PortState> doConnect();
+    protected abstract void doConnect();
 
-    protected abstract Future<PortState> doDisconnect();
+    protected abstract void doDisconnect();
 
     protected abstract boolean doTransmit(byte[] data);
 
-    protected abstract Observable<byte[]> doReceive();
+    protected Observable<byte[]> doReceive() {
+        return Observable.never();
+    }
 }

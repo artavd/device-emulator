@@ -16,7 +16,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import static artavd.devices.console.Constants.EMULATOR_EXECUTOR;
+import static artavd.devices.EmulatorCoreConfiguration.EMULATOR_EXECUTOR;
+import static artavd.devices.EmulatorCoreConfiguration.IO_EXECUTOR;
 
 @Configuration
 public class ApplicationConfiguration {
@@ -25,6 +26,15 @@ public class ApplicationConfiguration {
     public ExecutorService emulatorExecutorService() {
         ThreadFactory emulatorThreadFactory = new BasicThreadFactory.Builder()
                 .namingPattern("emulator-thread-%d")
+                .daemon(true)
+                .build();
+        return Executors.newCachedThreadPool(emulatorThreadFactory);
+    }
+
+    @Bean(name = IO_EXECUTOR)
+    public ExecutorService ioExecutorService() {
+        ThreadFactory emulatorThreadFactory = new BasicThreadFactory.Builder()
+                .namingPattern("io-thread-%d")
                 .daemon(true)
                 .build();
         return Executors.newCachedThreadPool(emulatorThreadFactory);
@@ -43,8 +53,8 @@ public class ApplicationConfiguration {
     public DeviceEmulatorLoader mockDeviceLoader() {
         return name -> {
             MessageProducer testMessage = MessageProducer.builder()
-                    .withInterval(5, TimeUnit.SECONDS)
-                    .withFormatString("Hello, guys, from " + name + "!")
+                    .withInterval(2, TimeUnit.SECONDS)
+                    .withFormatString("Hello, guys, from " + name + "!" + System.lineSeparator())
                     .withName("test message")
                     .build();
 

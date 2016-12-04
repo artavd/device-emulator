@@ -2,8 +2,6 @@ package artavd.io;
 
 import rx.Observable;
 
-import java.util.concurrent.Future;
-
 public interface Port {
 
     String getType();
@@ -16,9 +14,9 @@ public interface Port {
 
     Observable<PortState> getStateFeed();
 
-    Future<PortState> connect();
+    void connect();
 
-    Future<PortState> disconnect();
+    void disconnect();
 
     boolean transmit(byte[] data);
 

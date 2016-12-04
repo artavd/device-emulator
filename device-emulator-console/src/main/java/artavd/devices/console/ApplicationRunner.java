@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Stream;
 
-import static artavd.devices.console.Constants.EMULATOR_EXECUTOR;
+import static artavd.devices.EmulatorCoreConfiguration.EMULATOR_EXECUTOR;
 import static java.util.stream.Collectors.toList;
 
 @Component
