@@ -1,7 +1,13 @@
-.gradle
-build
+# Gradle
+/.gradle/
+build/
 
-.idea
+# IntelliJ IDEA
+/.idea/
 *.iml
+
+# Node JS + NPM
+/device-emulator-web-ui/node_modules/
+/device-emulator-web-ui/dist/
 
 *.log
