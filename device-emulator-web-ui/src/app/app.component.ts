@@ -4,21 +4,7 @@ import {Device} from './model/device';
 
 @Component({
     selector: 'app-root',
-    template: `
-        <nav>
-            <a href="#">End points</a>
-            <a href="#">Devices</a>
-        </nav>
-        <div>
-            <ul>
-                <li *ngFor="let device of devices">
-                    <button (click)="changeDeviceState(device)">{{device.isStarted() ? "Stop" : "Start"}}</button>
-                    {{device.name}} : {{device.state}}
-                </li>
-            </ul>
-        </div>
-    `,
-    styles: [],
+    templateUrl: "view/app.html",
     providers: [DevicesService]
 })
 export class AppComponent implements OnInit {
