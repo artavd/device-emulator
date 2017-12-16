@@ -113,7 +113,7 @@ public class ApplicationRunner implements CommandLineRunner {
         Observable.combineLatest(dispatchedDevicesStateFeeds, ApplicationRunner::combineStates)
                 .takeUntil(states -> states.allMatch(s -> s == DeviceState.STOPPED))
                 .toBlocking()
-                .last();
+                .lastOrDefault(Stream.of(DeviceState.STOPPED));
     }
 
     private static Stream<DeviceState> combineStates(Object... states) {
