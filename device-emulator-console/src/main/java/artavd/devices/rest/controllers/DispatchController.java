@@ -9,7 +9,6 @@ import artavd.devices.rest.response.DispatchDto;
 import artavd.devices.rest.response.PortDto;
 import artavd.io.Port;
 import artavd.io.PortsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,14 +17,17 @@ import java.util.stream.Collectors;
 @RestController
 public class DispatchController {
 
-    @Autowired
     private Dispatcher dispatcher;
-
-    @Autowired
     private DevicesRepository devicesRepository;
-
-    @Autowired
     private PortsRepository portsRepository;
+
+    public DispatchController(Dispatcher dispatcher,
+                              DevicesRepository devicesRepository,
+                              PortsRepository portsRepository) {
+        this.dispatcher = dispatcher;
+        this.devicesRepository = devicesRepository;
+        this.portsRepository = portsRepository;
+    }
 
     @GetMapping("/dispatch")
     public List<DispatchDto> getDispatch() {

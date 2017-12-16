@@ -7,7 +7,6 @@ import artavd.io.PortState;
 import artavd.io.PortsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,8 +27,11 @@ public class PortsController {
     @Value("${rest.timeouts.disconnectPort:${rest.timeouts.default}}")
     private int disconnectPortTimeout;
 
-    @Autowired
     private PortsRepository repository;
+
+    public PortsController(PortsRepository repository) {
+        this.repository = repository;
+    }
 
     @GetMapping("")
     public List<PortDto> getPorts() {
@@ -51,25 +53,25 @@ public class PortsController {
     }
 
     @PostMapping("/{name}/connect")
-    public PortDto connectPort(@PathVariable String name) throws Exception {
+    public PortDto connectPort(@PathVariable String name) {
         Port requestedPort = ControllerUtils.getPort(name, repository);
         doConnect(requestedPort);
         return PortDto.from(requestedPort);
     }
 
     @PostMapping("/{name}/disconnect")
-    public PortDto disconnectPort(@PathVariable String name) throws Exception {
+    public PortDto disconnectPort(@PathVariable String name) {
         Port requestedPort = ControllerUtils.getPort(name, repository);
         doDisconnect(requestedPort);
         return PortDto.from(requestedPort);
     }
 
-    private void doConnect(Port port) throws Exception {
+    private void doConnect(Port port) {
         port.connect();
         waitForTerminalState(port, connectPortTimeout, "is not connected");
     }
 
-    private void doDisconnect(Port port) throws Exception {
+    private void doDisconnect(Port port) {
         port.disconnect();
         waitForTerminalState(port, disconnectPortTimeout, "is not disconnected");
     }

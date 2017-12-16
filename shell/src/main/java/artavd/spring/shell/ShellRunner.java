@@ -1,19 +1,21 @@
 package artavd.spring.shell;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.shell.core.ExitShellRequest;
 import org.springframework.shell.core.JLineShellComponent;
 
-final class ShellRunner implements CommandLineRunner {
+public final class ShellRunner implements CommandLineRunner {
 
     // TODO: Order to lower precedence
 
-    @Autowired
     private JLineShellComponent shell;
 
+    public ShellRunner(JLineShellComponent shell) {
+        this.shell = shell;
+    }
+
     @Override
-    public void run(String[] args) throws Exception {
+    public void run(String[] args) {
         shell.start();
         shell.promptLoop();
         ExitShellRequest exitShellRequest = shell.getExitShellRequest();

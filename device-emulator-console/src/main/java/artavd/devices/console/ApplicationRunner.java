@@ -9,7 +9,6 @@ import artavd.devices.dispatch.DispatcherUtils;
 import artavd.io.Port;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -33,33 +32,34 @@ public class ApplicationRunner implements CommandLineRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(ApplicationRunner.class);
 
-    @Autowired
     private Options options;
-
-    @Autowired
     private Dispatcher dispatcher;
-
-    @Autowired
     private DispatcherLoaderFactory dispatcherLoaderFactory;
-
-    @Autowired
-    @Qualifier(EMULATOR_EXECUTOR)
     private ExecutorService emulatorExecutorService;
 
+    public ApplicationRunner(Options options,
+                             Dispatcher dispatcher,
+                             DispatcherLoaderFactory dispatcherLoaderFactory,
+                             @Qualifier(EMULATOR_EXECUTOR) ExecutorService emulatorExecutorService) {
+
+        this.options = options;
+        this.dispatcher = dispatcher;
+        this.dispatcherLoaderFactory = dispatcherLoaderFactory;
+        this.emulatorExecutorService = emulatorExecutorService;
+    }
+
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         try {
             doRun();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             logger.error("Device Emulator Console application FAILED with error: {}", ex.getMessage(), ex);
-        }
-        finally {
+        } finally {
             emulatorExecutorService.shutdown();
         }
     }
 
-    private void doRun() throws Exception {
+    private void doRun() {
         configureDispatcher();
         startEmulators();
         waitForUserStop();
@@ -71,8 +71,8 @@ public class ApplicationRunner implements CommandLineRunner {
         DispatcherLoader loader = options.getConfigurationFile() != null
                 ? dispatcherLoaderFactory.createFileLoader(Paths.get(options.getConfigurationFile()))
                 : (options.getDeviceName() != null || options.getPortName() != null)
-                    ? dispatcherLoaderFactory.createSingleLoader(options.getDeviceName(), options.getPortName())
-                    : null;
+                ? dispatcherLoaderFactory.createSingleLoader(options.getDeviceName(), options.getPortName())
+                : null;
 
         if (loader == null) {
             return;
@@ -117,6 +117,6 @@ public class ApplicationRunner implements CommandLineRunner {
     }
 
     private static Stream<DeviceState> combineStates(Object... states) {
-        return Arrays.stream(states).map(state -> (DeviceState)state);
+        return Arrays.stream(states).map(state -> (DeviceState) state);
     }
 }

@@ -26,7 +26,7 @@ class ShellConfiguration {
 
     @Bean
     public ShellRunner shellRunner() {
-        return new ShellRunner();
+        return new ShellRunner(shell());
     }
 
     @Bean

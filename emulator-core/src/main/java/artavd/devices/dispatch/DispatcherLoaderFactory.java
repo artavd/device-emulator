@@ -5,7 +5,6 @@ import artavd.devices.core.DevicesRepository;
 import artavd.devices.core.DevicesUtils;
 import artavd.io.Port;
 import artavd.io.PortsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
@@ -15,11 +14,13 @@ import java.util.Map;
 @Component
 public final class DispatcherLoaderFactory {
 
-    @Autowired
     private DevicesRepository devicesRepository;
-
-    @Autowired
     private PortsRepository portsRepository;
+
+    public DispatcherLoaderFactory(DevicesRepository devicesRepository, PortsRepository portsRepository) {
+        this.devicesRepository = devicesRepository;
+        this.portsRepository = portsRepository;
+    }
 
     public DispatcherLoader createFileLoader(Path configFile) {
         return new FileDispatcherLoader(configFile, portsRepository, devicesRepository);

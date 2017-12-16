@@ -6,28 +6,17 @@ import artavd.devices.rest.response.NoDataFoundException;
 import artavd.io.Port;
 import artavd.io.PortsRepository;
 
-import java.util.Optional;
-
 public class ControllerUtils {
 
     public static DeviceController getDevice(String name, DevicesRepository repository) {
-        boolean loaded = repository.getDevices().stream().anyMatch(d -> d.getName().equals(name));
-        if (!loaded) {
-            throw new NoDataFoundException(String.format(
-                    "Device [ %s ] is not loaded yet", name));
-        }
-
-        // No inspection due to loaded check above
-        //noinspection OptionalGetWithoutIsPresent
-        return repository.getController(name).get();
+        return repository
+                .getController(name)
+                .orElseThrow(() -> new NoDataFoundException(String.format( "Device [ %s ] is not loaded yet", name)));
     }
 
     public static Port getPort(String name, PortsRepository repository) throws NoDataFoundException {
-        Optional<Port> port = repository.getPort(name);
-        if (!port.isPresent()) {
-            throw new NoDataFoundException(String.format("Port [ %s ] is not exist", name));
-        }
-
-        return port.get();
+        return repository
+                .getPort(name)
+                .orElseThrow(() -> new NoDataFoundException(String.format("Port [ %s ] is not exist", name)));
     }
 }

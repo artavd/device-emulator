@@ -6,7 +6,6 @@ import artavd.io.Port;
 import artavd.io.PortState;
 import artavd.io.PortsRepository;
 import org.fusesource.jansi.Ansi;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.core.CommandMarker;
 import org.springframework.shell.core.annotation.CliCommand;
 import org.springframework.shell.core.annotation.CliOption;
@@ -21,11 +20,13 @@ public final class PortCommands implements CommandMarker {
 
     private static final Logger LOGGER = HandlerUtils.getLogger(PortCommands.class);
 
-    @Autowired
     private PortsRepository ports;
-
-    @Autowired
     private Dispatcher dispatcher;
+
+    public PortCommands(PortsRepository ports, Dispatcher dispatcher) {
+        this.ports = ports;
+        this.dispatcher = dispatcher;
+    }
 
     @CliCommand(value = "port list", help = "Print list of available ports with information about each one.")
     public void getPortList() {

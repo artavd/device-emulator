@@ -7,7 +7,6 @@ import artavd.devices.rest.response.DeviceDto;
 import artavd.devices.rest.response.NoDataFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,8 +29,11 @@ public class DevicesController {
     @Value("${rest.timeouts.stopDevice:${rest.timeouts.default}}")
     private int stopDeviceTimeout;
 
-    @Autowired
     private DevicesRepository repository;
+
+    public DevicesController(DevicesRepository repository) {
+        this.repository = repository;
+    }
 
     @GetMapping("")
     public List<DeviceDto> getDevices() {

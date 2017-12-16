@@ -28,8 +28,8 @@ public class EmulatorCoreConfiguration {
     }
 
     @Bean
-    public DispatcherLoaderFactory dispatcherLoaderFactory() {
-        return new DispatcherLoaderFactory();
+    public DispatcherLoaderFactory dispatcherLoaderFactory(List<DeviceEmulatorLoader> loaders) {
+        return new DispatcherLoaderFactory(emulatorsRepository(loaders), portsRepository());
     }
 
     @Bean
